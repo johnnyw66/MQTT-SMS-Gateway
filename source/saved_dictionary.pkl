@@ -1,0 +1,1 @@
+{'appwd': '*****', 'mqhost': '213.219.39.111', 'apn': '*****', 'mquser': 'zzzz', 'mqsec': 'xxxx', 'dongid': '3', 'mqprt': '1883'}

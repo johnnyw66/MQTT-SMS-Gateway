@@ -1,0 +1,14 @@
+2023-09-18 11:15:25 [info     / 153kB] starting DNS server on 192.168.4.1
+2023-09-18 11:15:25 [info     / 151kB] > starting catch all dns server on port 53
+2023-09-18 11:15:25 [info     / 149kB] > starting web server on port 80
+2023-09-18 11:15:51 [error    / 153kB] 
+2023-09-18 11:16:00 [debug    / 147kB] Get request
+2023-09-18 11:17:14 [info     / 152kB] starting DNS server on 192.168.4.1
+2023-09-18 11:17:14 [info     / 150kB] > starting catch all dns server on port 53
+2023-09-18 11:17:14 [info     / 148kB] > starting web server on port 80
+2023-09-18 11:19:21 [info     / 148kB] starting DNS server on 192.168.4.1
+2023-09-18 11:19:21 [info     / 146kB] > starting catch all dns server on port 53
+2023-09-18 11:19:21 [info     / 144kB] > starting web server on port 80
+2023-09-18 11:21:09 [info     / 147kB] starting DNS server on 192.168.4.1
+2023-09-18 11:21:09 [info     / 145kB] > starting catch all dns server on port 53
+2023-09-18 11:21:09 [info     / 143kB] > starting web server on port 80
