@@ -406,5 +406,5 @@ If you're installing Mosquitto at home you'll need to open up relevant ports on 
 
 
 Ignore the very large capacitor on the GSM module. I soldered this so that the board could provide larger than normal current draws when the board was operating from a TTL (5v) source.
-Since we are running the board at 3.7v there is no need to make sure modification.
+Since we are running the board at 3.7v there is no need to change the capacitor.
 
