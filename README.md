@@ -181,8 +181,13 @@ button_verify_identity.submit()
 ```
 
 The various Selenuim Python libraries support waiting for page loading - making sure you don't miss out on important data - due to the asynchronous nature of web browsing.
-If you are familiar with DOM handling in javascript - you will probably be comfortable with writing code to search for HTML elements. Selenium 'bot' coding uses a lot of searching for elements, generating input actions such as clicking buttons or submitting forms. The code above is tightly coupled to the names of elements in a web servers web pages, meaning it will fail if the any of the element identities are changed.
+If you are familiar with DOM handling in javascript - you will probably be comfortable with writing code to search for HTML elements. Selenium 'bot' coding uses a lot of searching for elements, generating input actions such as clicking buttons or submitting forms. The code above is tightly coupled to the names of elements in a web servers web pages, meaning it will fail if any of the element identities are changed.
 
+In the verification loop - ***while verification_code*** the line -
+
+***client.loop(timeout=1.0)*** 
+
+is used to process and handle the paho MQTT client - which is run under its own event loop.
 
 
 ## Selenium sounds great - Why don't you use that?
