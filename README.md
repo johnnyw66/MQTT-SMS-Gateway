@@ -236,9 +236,9 @@ All is not lost, mind. Most browsers have been developed under the 'Open Source'
 
 ### A word about other WebBrowser Engines and Python support. (A Fanfare for Playwright)
 
-During developing my bot applications - I have noticed a problem with Python support on Linux/Mac and Windows. 
+During developing my bot applications - I have noticed a problem with Selenium's Python support on Linux/Mac and Windows. 
 
-My code started to misbehave whenever I ran the Selenium Webbrowser engine in headless mode. By 'misbehave' I mean that the webserver would bring up the usual 'Prove you are not a Robot' check page.
+My code started to misbehave whenever I ran the Selenium Webbrowser engine in headless mode. By 'misbehave' I mean that the webserver I was 'scraping' would bring up the usual 'Prove you are not a Robot' check page.
 
 Not being sure of what goes on under the hood - I started to use **mitmproxy** to trace HTTP events - and thought I sussed
 out this behaviour was because graphics was not being loaded - and so routes and possible cookie settings were not being initiated.
