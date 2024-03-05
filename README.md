@@ -234,6 +234,158 @@ You can see from the code above that the actual stored values of a cookie need t
 All is not lost, mind. Most browsers have been developed under the 'Open Source' umbrella, meaning that if you are confident with programming in diffent languages - you can find those bits relevant to the encryption and decryption of cookies and port code to Python.
 
 
+### A word about other WebBrowser Engines and Python support. (A Fanfare for Playwright)
+
+During developing my bot applications - I have noticed a problem with Python support on Linux/Mac and Windows. 
+
+My code started to misbehave whenever I ran the Selenium Webbrowser engine in headless mode. By 'misbehave' I mean that the webserver would bring up the usual 'Prove you are not a Robot' check page.
+
+Not being sure of what goes on under the hood - I started to use **mitmproxy** to trace HTTP events - and thought I sussed
+out this behaviour was because graphics was not being loaded - and so routes and possible cookie settings were not being initiated.
+Inevitably my suspicions were proved wrong when I started to use the alternative Webbrowser Engine Playwright. All my problems with running the engine in headless mode disappeared!
+
+
+Snippets of code using asyncio and playwright python modules. Note the cleaner mechanism for handling verification codes by using events.
+
+```
+import asyncio
+from playwright.async_api import async_playwright
+from asyncio_mqtt import Client as AsyncMQTTClient
+
+class EventWrapper():
+
+    def __init__(self):
+        self._event = asyncio.Event()
+        self._shared = None
+
+    def set(self, shared):
+        self._shared = shared
+        self._event.set()
+
+    def get(self):
+        return self._shared
+
+    async def wait(self):
+        await self._event.wait()
+
+    def clear(self):    
+        self._event.clear()
+
+    def __str__(self):
+        return f"{self._event}: shared:{self._shared}"
+
+
+def findValue(key_value,string_value,index=0,nameToken="name",valueToken="value"):
+    """ Replacement for BeautifulSoap """
+    pattstr = f'{nameToken}'+r'\s*=\s*"' + f'{key_value}' + r'"\s+'+ f'{valueToken}' + r'\s*=\s*"([^"]+)"'
+    find=re.search(pattstr,string_value)
+    return find.group(1)
+
+
+async def receive_verification_code(event, devicename):
+    logging.info("receive_verification_code() running")
+    logging.info(f"starting MQTT {devicename}")
+
+    async with AsyncMQTTClient(hostname=configure.MQTT_HOSTNAME, port=configure.MQTT_PORT,
+                            username=configure.MQTT_USERNAME, password=configure.MQTT_SECRET) as client:
+
+        await client.subscribe(f"mqttsmsgw/{devicename}")
+
+        async with client.messages() as messages:
+            async for message in messages:
+                topic = str(message.topic)
+
+                try:
+                    msg_payload = eval(message.payload.decode('utf-8'))
+                    logging.info(f"payload: {msg_payload}")
+                    txt_message = str(msg_payload['text']).lower()
+                    mo_from = msg_payload['msisdn']
+                    to = msg_payload['to']
+                    verification_code = None
+                    vcode = re.search(r"\b"+".*fication code is ([0-9]+)", txt_message)
+                    if (vcode is not None):
+                        verification_code = vcode.group(1)
+                        event.set(verification_code)
+                except Exception as e:
+                    logging.warning(f"Topic: {topic}. Not a valid JSON message.{e}")
+
+            logging.warning("MQTT Connection Lost!! Need to reestablish!")
+
+async def authenticate_with_playwright(event, otp_index, headless=True, javascript_enabled=True):
+
+
+    logging.info(f'authenticate_with_playwright headless: {headless} javascript:{javascript_enabled} otp index: {otp_index}')
+
+
+    async with async_playwright() as playwright:
+        browser = await playwright.firefox.launch(headless=headless)
+        context = await browser.new_context(java_script_enabled=javascript_enabled)
+        page = await context.new_page()
+
+        await page.goto('https://atoz.amazon.work/login')
+        
+        # Fill in the form fields
+        await page.fill('input[name="login"]', configure.ATOZ_USERNAME)
+        await page.fill('input[name="password"]', configure.ATOZ_PASSWORD)
+        
+        # Submit the form
+        await page.click('button[type="submit"]')
+
+        # Wait for the page to load after form submission
+        await page.wait_for_load_state('networkidle')
+
+        await page.check(f'input[type="radio"][value=\"{otp_index}\"]')
+        await page.click('button[type="submit"]')
+
+        await page.wait_for_load_state('networkidle')
+        await page.check('input[type="checkbox"][id="trustedDevice"]')
+
+
+        while True:
+            try:
+                await asyncio.wait_for(event.wait(), timeout=60.0)  # Wait for the event with a timeout of 60 seconds
+                logging.info(f"We got something from our event {event.get()}")
+                break 
+            except asyncio.TimeoutError:
+                logging.info("Timeout occurred while waiting for the event.")
+                return None
+
+        verification_code = event.get()
+        event.clear()
+
+        logging.info(f"fill form with verification code {verification_code}")
+        await page.fill('input[name="code"]',verification_code)        
+        await page.click('button[type="submit"]')
+
+        if (not javascript_enabled):
+            await page.click('button[type="submit"]')     # Continue - ('No Javascript')
+
+        element = await page.wait_for_selector('#employeefooter')
+        content = await page.content()
+        find = re.search(r'employeeId":"([0-9]+)"', content)
+        employee_id = find.group(1)
+        #csrf_token = findValue('csrf-token', content, valueToken="content")
+
+        logging.info(f"Employee ID: {employee_id}")
+
+        cookies = await context.cookies()
+        await browser.close()
+        return cookies
+
+```
+
+```
+    if (secure_login):
+        logging.info("Secure Login with OTP.")
+        otp_index = configure.OTP_INDEX
+        device_name = f"dongle{configure.DEVICE_NAME}"
+        verification_event = EventWrapper()
+        mqtt_verification_task = receive_verification_code(verification_event, device_name)
+        asyncio.gather(mqtt_verification_task)
+        cookies = await authenticate_with_playwright(verification_event, otp_index, headless=False)
+        session = create_session(cookies)
+```
+
 
 ### Building your MQTT SMS Gateway
 
