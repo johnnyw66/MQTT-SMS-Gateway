@@ -228,7 +228,7 @@ There are a few software hurdles you have to get over in order to copy browser c
         conn.close()
         unlink("cookies.db")
 ```
-You can see from the code above that the actual stored values of a cookie need to go through a **decryption function** - (in the 90s cookies where stored in plain unencrypted text files) - so there is some work needed to decrypt the actual value. Unfortunately, the decryption algorithm for this changes with the browser and operating system.
+You can see from the code above that the actual stored values of a cookie need to go through a **decryption function** - (in the 90s cookies were stored in plain unencrypted text files) - so there is some work needed to decrypt the actual value. Unfortunately, the decryption algorithm for this changes with the browser and operating system.
 
 
 All is not lost, mind. Most browsers have been developed under the 'Open Source' umbrella, meaning that if you are confident with programming in diffent languages - you can find those bits relevant to the encryption and decryption of cookies and port code to Python.
