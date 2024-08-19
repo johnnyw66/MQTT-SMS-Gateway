@@ -357,10 +357,10 @@ sms_queue = Queue()
 with open('saved_dictionary.pkl', 'rb') as f:
     params = pickle.load(f)
 
-config['server'] = params['mqhost'] #'213-219-39-111.ip.linodeusercontent.com'
-config ['port'] = int(params['mqprt']) #1883
-config['user'] = params['mquser'] #'sms2'
-config ['password'] = params['mqsec'] #'johnny66' 
+config['server'] = params['mqhost'] 
+config ['port'] = int(params['mqprt']) 
+config['user'] = params['mquser'] 
+config ['password'] = params['mqsec']
 
 config['ssid'] = params['apn']
 config['wifi_pw'] = params['appwd']
