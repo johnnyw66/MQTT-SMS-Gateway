@@ -113,7 +113,7 @@ On AtoZ - You'll have to run this 'refresh' session process every 30 days.
 ## You haven't said much about 'Selenium' - What is that?
 
 
-In short, Python Selenium is a popular library for automating web browsers, and needs to be used with a 'WebDriver' for a particular browser, (Chrome, Firefox, Edge)
+In short, Python Selenium is a popular library for automating web browser interaction, and needs to be used with a 'WebDriver' for a particular browser, (Chrome, Firefox, Edge)
 
 
 Here's a breakdown of what Python Selenium and the most popular (Chrome) WebDriver can do:
